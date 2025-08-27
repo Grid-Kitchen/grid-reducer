@@ -82,8 +82,8 @@ docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
 [project.urls]
-Documentation = "https://github.com/grid-atlas/grid-reducer"
-Issues = "https://github.com/grid-atlas/grid-reducer/-/issues"
+Documentation = "https://grid-atlas.github.io/grid-reducer/latest/"
+Issues = "https://github.com/grid-atlas/grid-reducer/issues"
 Source = "https://github.com/grid-atlas/grid-reducer"
 
 [tool.hatch.version]
@@ -101,4 +101,5 @@ addopts = "-p no:faulthandler"
 packages = ["src/grid_reducer"]
 
 [tool.hatch.build.targets.sdist]
+
 include = ["src/grid_reducer"]
