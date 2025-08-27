@@ -19,7 +19,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 </details> <details> <summary><strong>🔵 Option B: Using <code>conda</code></strong></summary>
 
 ```bash
-conda create -n grid-reducer-env python=3.10
+conda create -n grid-reducer-env python=3.11
 conda activate grid-reducer-env
 ```
 
