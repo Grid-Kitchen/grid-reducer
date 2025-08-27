@@ -21,6 +21,33 @@ for folder in test_folders:
         files += [f for f in folder.rglob("*.dss") if pattern.search(f.name)]
 
 
+def assert_reasonable_circuit_power_deviation(original_circuit_file, reduced_circuit_file):
+    original_ckt_power = OpenDSS(original_circuit_file).get_circuit_power()
+    reduced_ckt_power = OpenDSS(reduced_circuit_file).get_circuit_power()
+    pct_diff = (
+        abs((original_ckt_power.real - reduced_ckt_power.real) / original_ckt_power.real) * 100
+    )
+    if pct_diff > 10:
+        warnings.warn(
+            f"Power flow results differ significantly: "
+            f"Original: {original_ckt_power}, Reduced: {reduced_ckt_power}, Pct Diff: {pct_diff:.2f}%",
+            stacklevel=2,
+        )
+
+
+def assert_reasonable_source_voltage_deviation(original_circuit_file, reduced_circuit_file):
+    original_ckt_source_voltage = OpenDSS(original_circuit_file).get_source_voltage()
+    reduced_ckt_source_voltage = OpenDSS(reduced_circuit_file).get_source_voltage()
+    pct_diff = (
+        abs(
+            (original_ckt_source_voltage - reduced_ckt_source_voltage)
+            / original_ckt_source_voltage
+        )
+        * 100
+    )
+    assert pct_diff < 10
+
+
 @pytest.mark.parametrize("file", files)
 def test_networkx_graph_creation(file):
     circuit = get_ckt_from_opendss_model(file)
@@ -36,21 +63,8 @@ def test_secondary_aggregation(file, tmp_path):
     reduced_circuit_file = tmp_path / "reduced_ckt.dss"
     write_to_opendss_file(circuit, original_circuit_file)
     write_to_opendss_file(new_circuit, reduced_circuit_file)
-    compare_powerflow_results(original_circuit_file, reduced_circuit_file)
-
-
-def compare_powerflow_results(original_circuit_file, reduced_circuit_file):
-    original_ckt_power = OpenDSS(original_circuit_file).get_circuit_power()
-    reduced_ckt_power = OpenDSS(reduced_circuit_file).get_circuit_power()
-    pct_diff = (
-        abs((original_ckt_power.real - reduced_ckt_power.real) / original_ckt_power.real) * 100
-    )
-    if pct_diff > 10:
-        warnings.warn(
-            f"Power flow results differ significantly: "
-            f"Original: {original_ckt_power}, Reduced: {reduced_ckt_power}, Pct Diff: {pct_diff:.2f}%",
-            stacklevel=2,
-        )
+    assert_reasonable_circuit_power_deviation(original_circuit_file, reduced_circuit_file)
+    assert_reasonable_source_voltage_deviation(original_circuit_file, reduced_circuit_file)
 
 
 @pytest.mark.parametrize("file", files)
@@ -61,4 +75,5 @@ def test_primary_aggregation(file, tmp_path):
     reduced_circuit_file = tmp_path / "reduced_ckt.dss"
     reducer.export_original_ckt(original_circuit_file)
     reducer.export(reduced_ckt, reduced_circuit_file)
-    compare_powerflow_results(original_circuit_file, reduced_circuit_file)
+    assert_reasonable_circuit_power_deviation(original_circuit_file, reduced_circuit_file)
+    assert_reasonable_source_voltage_deviation(original_circuit_file, reduced_circuit_file)
