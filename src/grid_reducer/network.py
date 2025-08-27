@@ -3,11 +3,11 @@ from typing import Any
 import networkx as nx
 
 from grid_reducer.altdss.altdss_models import Circuit
-from grid_reducer.utils import (
+from grid_reducer.utils.ckt import (
     get_circuit_bus_name,
     extract_bus_name,
-    get_normally_open_switches,
     get_open_lines,
+    get_normally_open_switches,
 )
 
 

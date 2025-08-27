@@ -7,13 +7,13 @@ from grid_reducer.altdss.altdss_models import (
     Storage_Common,
     BusConnection,
 )
-from grid_reducer.utils import (
+from grid_reducer.utils.data import (
     generate_short_name,
-    get_number_of_phases_from_bus,
+    group_objects_excluding_fields,
     get_extra_param_values,
     sum_or_none,
-    group_objects_excluding_fields,
 )
+from grid_reducer.utils.parser import get_number_of_phases_from_bus
 from grid_reducer.aggregators.registry import register_aggregator
 
 

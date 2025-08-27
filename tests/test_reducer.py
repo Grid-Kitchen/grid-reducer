@@ -5,7 +5,7 @@ import warnings
 import networkx as nx
 import pytest
 
-from grid_reducer.utils import get_ckt_from_opendss_model, write_to_opendss_file
+from grid_reducer.utils.files import write_to_opendss_file
 from grid_reducer.network import get_graph_from_circuit
 from grid_reducer.aggregate_secondary import aggregate_secondary_assets
 from grid_reducer.opendss import OpenDSS
@@ -50,14 +50,14 @@ def assert_reasonable_source_voltage_deviation(original_circuit_file, reduced_ci
 
 @pytest.mark.parametrize("file", files)
 def test_networkx_graph_creation(file):
-    circuit = get_ckt_from_opendss_model(file)
+    circuit = OpenDSS(file).get_circuit()
     graph = get_graph_from_circuit(circuit)
     assert isinstance(graph, nx.Graph)
 
 
 @pytest.mark.parametrize("file", files)
 def test_secondary_aggregation(file, tmp_path):
-    circuit = get_ckt_from_opendss_model(file)
+    circuit = OpenDSS(file).get_circuit()
     new_circuit, _ = aggregate_secondary_assets(circuit)
     original_circuit_file = tmp_path / "original_ckt.dss"
     reduced_circuit_file = tmp_path / "reduced_ckt.dss"
