@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from grid_reducer.altdss.altdss_models import Bus, Line_Common, LengthUnit
 from grid_reducer.similarity.line import LineSimilarity
-from grid_reducer.utils import generate_short_name
+from grid_reducer.utils.data import generate_short_name
 
 T = TypeVar("T")
 

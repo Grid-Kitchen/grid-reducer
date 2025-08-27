@@ -3,12 +3,12 @@ import math
 from typing import Type
 
 from grid_reducer.altdss.altdss_models import Load_kWkvar, Load_kVAPF, Load_kWPF, BusConnection
-from grid_reducer.utils import (
-    get_number_of_phases_from_bus,
-    get_extra_param_values,
+from grid_reducer.utils.data import (
     generate_short_name,
     group_objects_excluding_fields,
+    get_extra_param_values,
 )
+from grid_reducer.utils.parser import get_number_of_phases_from_bus
 from grid_reducer.aggregators.registry import register_aggregator
 
 

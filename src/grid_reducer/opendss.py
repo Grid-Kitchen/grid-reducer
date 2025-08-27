@@ -3,7 +3,8 @@ import json
 
 import opendssdirect as odd
 
-from grid_reducer.utils import read_json_file
+from grid_reducer.utils.files import read_json_file
+from grid_reducer.altdss.altdss_models import Circuit
 
 
 class OpenDSS:
@@ -26,5 +27,21 @@ class OpenDSS:
     def solve(self):
         odd.Solution.Solve()
 
+    def get_circuit_dict(self) -> dict:
+        return json.loads(odd.Circuit.ToJSON())
+
+    def get_circuit(self) -> Circuit:
+        return Circuit.model_validate(self.get_circuit_dict())
+
     def get_circuit_power(self) -> complex:
         return complex(*odd.Circuit.TotalPower())
+
+    def get_all_bus_voltages(self) -> dict[str, float]:
+        return dict(zip(odd.Circuit.AllBusNames(), odd.Circuit.AllBusMagPu(), strict=False))
+
+    def get_substation_bus_name(self) -> str:
+        odd.Vsources.First()
+        return odd.CktElement.BusNames()[0].split(".")[0]
+
+    def get_source_voltage(self) -> float:
+        return self.get_all_bus_voltages().get(self.get_substation_bus_name())

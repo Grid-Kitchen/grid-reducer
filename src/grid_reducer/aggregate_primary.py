@@ -294,4 +294,6 @@ def _get_buses_to_keep(circuit: Circuit) -> set:
     for transformer in transformers:
         for bus in transformer.Bus:
             buses_to_keep.add(bus.root.split(".")[0])
+    for vsource in circuit.Vsource.root.root:
+        buses_to_keep.add(vsource.root.Bus1.root.split(".")[0])
     return buses_to_keep
