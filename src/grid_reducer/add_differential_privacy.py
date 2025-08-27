@@ -1,6 +1,7 @@
 import copy
 import math
 import random
+from math import radians, cos, sin, asin, sqrt
 
 import numpy as np
 
@@ -106,3 +107,59 @@ def get_dp_circuit(circuit: Circuit, noise_config: BasePrivacyConfig) -> Circuit
     new_circuit = copy.deepcopy(circuit)
     new_circuit.Bus = new_buses
     return new_circuit
+
+
+def haversine(lon1: float, lat1: float, lon2: float, lat2: float) -> float:
+    """
+    Returns distance in meters between two (lon, lat) points
+    """
+    # Earth radius in meters
+    R = 6371000
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    distance = R * c
+    return distance
+
+
+def coord_distance(x1: float, y1: float, x2: float, y2: float, is_geo: bool) -> float:
+    """Returns the geographic (haversine) or Euclidean distance between two coordinate pairs."""
+    if is_geo:
+        return haversine(x1, y1, x2, y2)
+    else:
+        return sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+
+def get_circuit_noisy_distances(
+    original_circuit: Circuit, noisy_circuit: Circuit, is_geo: bool = None
+):
+    """
+    Computes the distances between corresponding buses in the original and noisy circuits:
+    - Geographic distance in meters if geo-coordinates are used
+    - Euclidean distance in coordinate space otherwise
+
+    Args:
+        original_circuit (Circuit): Reference circuit with original bus coordinates
+        noisy_circuit (Circuit): Perturbed circuit with noisy bus coordinates
+        is_geo (bool, optional): If True, use geographic (meter) distances; otherwise, use coordinate space.
+            If None, inferred from original_circuit.
+
+    Returns:
+        list[float]: List of distances between each matching pair of buses. Only buses with valid coordinates in both
+        circuits are included.
+    """
+    if is_geo is None:
+        is_geo = check_if_circuit_is_geo(original_circuit)
+    dists = []
+    for orig_bus, noisy_bus in zip(original_circuit.Bus, noisy_circuit.Bus, strict=False):
+        if (
+            orig_bus.X is not None
+            and orig_bus.Y is not None
+            and noisy_bus.X is not None
+            and noisy_bus.Y is not None
+        ):
+            d = coord_distance(orig_bus.X, orig_bus.Y, noisy_bus.X, noisy_bus.Y, is_geo)
+            dists.append(d)
+    return dists
