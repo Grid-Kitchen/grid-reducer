@@ -22,11 +22,11 @@ from grid_reducer.altdss.altdss_models import (
     Fuse,
 )
 from grid_reducer.network import get_graph_from_circuit, get_source_connected_component
-from grid_reducer.utils import (
-    get_bus_connected_assets,
+from grid_reducer.utils.ckt import (
     get_circuit_bus_name,
-    get_normally_open_switches,
+    get_bus_connected_assets,
     get_open_lines,
+    get_normally_open_switches,
 )
 from grid_reducer.aggregators.registry import AGGREGATION_FUNC_REGISTRY
 from grid_reducer.summary import SecondaryAssetSummary, SecondaryAssetSummaryItem

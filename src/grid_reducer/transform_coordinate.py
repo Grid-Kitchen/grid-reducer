@@ -5,7 +5,7 @@ import networkx as nx
 
 from grid_reducer.altdss.altdss_models import Circuit
 from grid_reducer.network import get_graph_from_circuit
-from grid_reducer.utils import extract_bus_name
+from grid_reducer.utils.ckt import extract_bus_name
 
 
 def get_switch_connected_buses(circuit: Circuit) -> set[str]:

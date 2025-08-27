@@ -1,14 +1,15 @@
 from pathlib import Path
 from typing import Type
 
-from grid_reducer.utils import get_ckt_from_opendss_model, print_summary_to_cli
+from grid_reducer.utils.display import print_summary_to_cli
 from grid_reducer.altdss.altdss_models import Circuit
 from grid_reducer.aggregate_secondary import aggregate_secondary_assets
 from grid_reducer.aggregate_primary import aggregate_primary_conductors
-from grid_reducer.utils import write_to_opendss_file
+from grid_reducer.utils.files import write_to_opendss_file
 from grid_reducer.transform_coordinate import transform_bus_coordinates, get_switch_connected_buses
 from grid_reducer.add_differential_privacy import get_dp_circuit, BasePrivacyConfig
 from grid_reducer.rename_components import rename_assets
+from grid_reducer.opendss import OpenDSS
 
 
 def get_edge_count(ckt: Circuit) -> int:
@@ -24,7 +25,7 @@ def get_edge_count(ckt: Circuit) -> int:
 class OpenDSSModelReducer:
     def __init__(self, master_dss_file: Path | str):
         self.master_dss_file = master_dss_file
-        self.ckt = get_ckt_from_opendss_model(Path(master_dss_file))
+        self.ckt = OpenDSS(master_dss_file).get_circuit()
 
     def reduce(
         self,
