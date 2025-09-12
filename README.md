@@ -34,7 +34,7 @@ conda activate grid-reducer-env
 
 ## 🚀 Step 2: Install the Project Locally
 
-Install the project in editable mode so changes to the code reflect immediately:
+Install the project:
 
 ```bash
 pip install grid_reducer
@@ -77,12 +77,18 @@ reducer.export(reduced_ckt, reduced_circuit_file)
 
 ## 📌 Notes
 
-* This is the recommended way to use the project during development.
-* In the future, the project may support installation via:
+* This is the recommended way to use the project:
 
 ```bash
 pip install grid-reducer
 ```
+
+* If you want your local changes to the code to be applied immediately (without needing to reinstall your package each time), use an “editable” install by running:
+
+```bash
+pip install -e .
+```
+
 
 Stay tuned for updates! 📬
 
