@@ -178,7 +178,7 @@ def get_cluster_dp_circuit(circuit: Circuit, noise_config: BasePrivacyConfig, cl
     for idx, label in enumerate(labels):
         clusters.setdefault(label, []).append(coords[idx])
     noisy_coords = []
-    for idx, label in enumerate(labels):
+    for _idx, label in enumerate(labels):
         cluster_points = clusters[label]
         # Compute centroid for cluster
         centroid = np.mean(cluster_points, axis=0)
@@ -230,9 +230,9 @@ def get_adaptive_dp_circuit(circuit: Circuit, base_epsilon=3500, min_epsilon=500
     return new_circuit
 
 def evaluate_dp_methods_on_circuit(
-    circuit: Circuit, 
-    noise_config: BasePrivacyConfig, 
-    cluster_eps=0.1, 
+    circuit: Circuit,
+    noise_config: BasePrivacyConfig,
+    cluster_eps=0.1,
     min_samples=3,
     adaptive_params=None
 ):
