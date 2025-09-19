@@ -89,7 +89,6 @@ pip install grid-reducer
 pip install -e .
 ```
 
-
 Stay tuned for updates! 📬
 
 Need help? Feel free to open an issue or reach out to the maintainers. 💬
