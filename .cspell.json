@@ -35,7 +35,10 @@
     "kamada",
     "kawai",
     "espvl",
-    "aggregatable"
+    "aggregatable",
+    "dlat",
+    "dlon",
+    "DBSCAN"
   ],
   "overrides": [
     {
