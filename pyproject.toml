@@ -34,7 +34,8 @@ dependencies = [
   "geopandas~=1.1.0",
   "mapclassify~=2.9.0",
   "rich~=14.0.0",
-  "tqdm~=4.67.1"
+  "tqdm~=4.67.1",
+  "scikit-learn~=1.7.2",
 ]
 
 [project.optional-dependencies]
