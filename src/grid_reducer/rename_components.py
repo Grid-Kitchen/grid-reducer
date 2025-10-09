@@ -40,6 +40,9 @@ def rename_point_assets(
         if prefix and mapping:
             if prefix.lower() not in value.lower():
                 raise NotImplementedError(f"{attr} {value} not supported yet for renaming.")
+            if value.split(".")[1] not in mapping:
+                print(f"Warning: {attr} {value} not found in mapping for renaming.")
+                return
             mapped = prefix + mapping[value.split(".")[1]]
         elif mapping:
             mapped = mapping[value]
@@ -149,6 +152,7 @@ def _rename_lines(new_circuit, bus_mapping, ic_mappings):
             root.Geometry = ic_mappings["LineGeometry"][root.Geometry]
         elif isinstance(root, Line_SpacingWires):
             root.Spacing = ic_mappings["LineSpacing"][root.Spacing]
+            root.Conductors = [c.split('.')[0] + "." + ic_mappings["WireData"][c.split('.')[1]] for c in root.Conductors]
 
         renamed.append(line)
 

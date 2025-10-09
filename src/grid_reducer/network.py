@@ -162,6 +162,8 @@ def add_transformer_components(
     if circuit_obj.Transformer is None:
         return
     for transformer in circuit_obj.Transformer.root.root:
+        if transformer.root.Enabled is False:
+            continue
         buses = set([el.root.split(".")[0] for el in transformer.root.Bus])
         if len(buses) == 2:
             add_transformer_edge(graph, buses, transformer, bus_voltage_mapper)
