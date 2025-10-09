@@ -4,6 +4,7 @@ import random
 from math import radians, cos, sin, asin, sqrt
 
 import numpy as np
+from sklearn.cluster import DBSCAN
 
 from grid_reducer.altdss.altdss_models import Circuit
 
@@ -163,3 +164,104 @@ def get_circuit_noisy_distances(
             d = coord_distance(orig_bus.X, orig_bus.Y, noisy_bus.X, noisy_bus.Y, is_geo)
             dists.append(d)
     return dists
+
+
+def get_cluster_dp_circuit(circuit: Circuit, noise_config: BasePrivacyConfig, cluster_eps=0.1, min_samples=3):
+    """
+    Clusters geo-coordinates, adds Laplace noise to cluster centroids,
+    assigns noisy centroid to all buses in cluster.
+    """
+    coords = [(bus.X, bus.Y) for bus in circuit.Bus if bus.X is not None and bus.Y is not None]
+    clustering = DBSCAN(eps=cluster_eps, min_samples=min_samples).fit(coords)
+    labels = clustering.labels_
+    clusters = {}
+    for idx, label in enumerate(labels):
+        clusters.setdefault(label, []).append(coords[idx])
+    noisy_coords = []
+    for _idx, label in enumerate(labels):
+        cluster_points = clusters[label]
+        # Compute centroid for cluster
+        centroid = np.mean(cluster_points, axis=0)
+        noisy_centroid = apply_planar_laplace_noise(
+            centroid[0], centroid[1], int(noise_config.geo_coordinate_noise)
+        )
+        noisy_coords.append(noisy_centroid)
+    # Build new circuit with bus coordinates replaced
+    new_buses = []
+    i = 0
+    for bus in circuit.Bus:
+        new_bus = copy.deepcopy(bus)
+        if bus.X is not None and bus.Y is not None:
+            new_bus.X, new_bus.Y = noisy_coords[i]
+            i += 1
+        new_buses.append(new_bus)
+    new_circuit = copy.deepcopy(circuit)
+    new_circuit.Bus = new_buses
+    return new_circuit
+
+def apply_adaptive_noise(x, y, coords, base_epsilon, min_epsilon=500, max_epsilon=5000, neighbor_radius=0.01):
+    """
+    Inject Laplace noise with adaptive scaling based on local density.
+    Points in denser areas get lower noise; sparse areas get higher noise.
+    """
+    # Count neighbors within 'neighbor_radius'
+    count = sum(
+        math.sqrt((x - x2)**2 + (y - y2)**2) < neighbor_radius
+        for x2, y2 in coords if (x2, y2) != (x, y)
+    )
+    # More neighbors --> less noise; fewer neighbors --> more noise
+    density_score = count / len(coords)
+    # Invert: sparse areas (density_score→0) => max_epsilon; dense areas (density_score→1) => min_epsilon
+    adaptive_epsilon = min_epsilon + (max_epsilon - min_epsilon) * (1 - density_score)
+    return apply_planar_laplace_noise(x, y, adaptive_epsilon)
+
+def get_adaptive_dp_circuit(circuit: Circuit, base_epsilon=3500, min_epsilon=500, max_epsilon=5000, neighbor_radius=0.01):
+    coords = [(bus.X, bus.Y) for bus in circuit.Bus if bus.X is not None and bus.Y is not None]
+    new_buses = []
+    for bus in circuit.Bus:
+        new_bus = copy.deepcopy(bus)
+        if new_bus.X is not None and new_bus.Y is not None:
+            new_bus.X, new_bus.Y = apply_adaptive_noise(
+                new_bus.X, new_bus.Y, coords, base_epsilon, min_epsilon, max_epsilon, neighbor_radius
+            )
+        new_buses.append(new_bus)
+    new_circuit = copy.deepcopy(circuit)
+    new_circuit.Bus = new_buses
+    return new_circuit
+
+def evaluate_dp_methods_on_circuit(
+    circuit: Circuit,
+    noise_config: BasePrivacyConfig,
+    cluster_eps=0.1,
+    min_samples=3,
+    adaptive_params=None
+):
+    # Planar Laplace mechanism
+    laplace_circuit = get_dp_circuit(circuit, noise_config)
+    laplace_dists = get_circuit_noisy_distances(circuit, laplace_circuit)
+
+    # Cluster-based mechanism
+    cluster_circuit = get_cluster_dp_circuit(circuit, noise_config, cluster_eps, min_samples)
+    cluster_dists = get_circuit_noisy_distances(circuit, cluster_circuit)
+
+    # Adaptive noise mechanism
+    if adaptive_params is None:
+        adaptive_params = dict(base_epsilon=noise_config.geo_coordinate_noise, min_epsilon=500, max_epsilon=5000, neighbor_radius=0.01)
+    adaptive_circuit = get_adaptive_dp_circuit(circuit, **adaptive_params)
+    adaptive_dists = get_circuit_noisy_distances(circuit, adaptive_circuit)
+
+    result = {
+        "planar_mean_loss": np.mean(laplace_dists),
+        "planar_median_loss": np.median(laplace_dists),
+        "cluster_mean_loss": np.mean(cluster_dists),
+        "cluster_median_loss": np.median(cluster_dists),
+        "adaptive_mean_loss": np.mean(adaptive_dists),
+        "adaptive_median_loss": np.median(adaptive_dists),
+        "planar_dists": laplace_dists,
+        "cluster_dists": cluster_dists,
+        "adaptive_dists": adaptive_dists,
+        "planar_circuit": laplace_circuit,
+        "cluster_circuit": cluster_circuit,
+        "adaptive_circuit": adaptive_circuit,
+    }
+    return result
