@@ -1,11 +1,11 @@
 # ⚡ Getting Started with `grid-reducer`
 
-[![Build](https://github.com/Grid-Atlas/grid-reducer/actions/workflows/ci.yml/badge.svg)](https://github.com/Grid-Atlas/grid-reducer/actions/workflows/ci.yml)
+[![Build](https://github.com/Grid-Kitchen/grid-reducer/actions/workflows/ci.yml/badge.svg)](https://github.com/Grid-Kitchen/grid-reducer/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/pypi/pyversions/grid-reducer)
-![License](https://img.shields.io/github/license/Grid-Atlas/grid-reducer)
-![Coverage](https://img.shields.io/codecov/c/github/Grid-Atlas/grid-reducer)
+![License](https://img.shields.io/github/license/Grid-Kitchen/grid-reducer)
+![Coverage](https://img.shields.io/codecov/c/github/Grid-Kitchen/grid-reducer)
 
-[View Full Documentation.](https://grid-atlas.github.io/grid-reducer).
+[View Full Documentation.](https://grid-kitchen.github.io/grid-reducer).
 
 Welcome! Follow the steps below to get `grid-reducer` up and running locally.  
 We recommend using a Python virtual environment for a clean install 🔒🐍.
