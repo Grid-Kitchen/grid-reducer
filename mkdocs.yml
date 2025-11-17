@@ -1,6 +1,6 @@
 site_name: "Grid Reducer Documentation"
-site_url: https://grid-atlas.github.io/grid-reducer
-repo_url: https://github.com/Grid-Atlas/grid-reducer
+site_url: https://grid-kitchen.github.io/grid-reducer
+repo_url: https://github.com/Grid-Kitchen/grid-reducer
 theme: 
   name: material
   logo: assets/logo.png

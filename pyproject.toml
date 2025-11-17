@@ -83,9 +83,9 @@ docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
 [project.urls]
-Documentation = "https://grid-atlas.github.io/grid-reducer/latest/"
-Issues = "https://github.com/grid-atlas/grid-reducer/issues"
-Source = "https://github.com/grid-atlas/grid-reducer"
+Documentation = "https://grid-kitchen.github.io/grid-reducer/latest/"
+Issues = "https://github.com/Grid-Kitchen/grid-reducer/issues"
+Source = "https://github.com/Grid-Kitchen/grid-reducer"
 
 [tool.hatch.version]
 path = "src/grid_reducer/version.py"
