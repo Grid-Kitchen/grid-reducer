@@ -3,7 +3,7 @@ import subprocess
 import platform
 import sys
 
-VERSION = "1.1.1"
+VERSION = "1.1.2"
 SUPPORTED_VERSIONS = [VERSION]
 
 
@@ -51,3 +51,4 @@ def version_summary() -> str:
     return "\n".join(
         "{:>30} {}".format(k + ":", str(v).replace("\n", " ")) for k, v in summary.items()
     )
+
